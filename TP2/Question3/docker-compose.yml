@@ -1,0 +1,109 @@
+version: '3'
+
+services:
+  api-gateway:
+    build: api_gateway/
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: secret
+    depends_on:
+      - books-service
+      - users-service
+      - transactions-service
+    networks:
+      - main-network
+
+  users-db:
+    image: postgres:12
+    ports:
+      - "5433:5432"
+    volumes:
+      - users_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbUser
+    networks:
+      - main-network
+
+  users-service:
+    build: users_service/
+    ports:
+      - "5003:5000"
+    environment:
+      DATABASE_URL: postgresql://username:password@users-db:5432/dbUser
+    depends_on:
+      - users-db
+    networks:
+      - main-network
+
+  books-db:
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    volumes:
+      - books_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbBook
+    networks:
+      - main-network
+
+  books-service:
+    build: books_service/
+    ports:
+      - "5002:5000"
+    environment:
+      DATABASE_URL: postgresql://username:password@books-db:5432/dbBook
+    depends_on:
+      - books-db
+    networks:
+      - main-network
+
+  web-interface:
+    build: web_interface/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - api-gateway
+    networks:
+      - main-network
+
+  transactions-db:
+    image: postgres:12
+    ports:
+      - "5434:5432"
+    volumes:
+      - transactions_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbTransaction
+    networks:
+      - main-network
+
+  transactions-service:
+    build: transactions_service/
+    ports:
+      - "5004:5000"
+    environment:
+      DATABASE_URL: postgresql://username:password@transactions-db:5432/dbTransaction
+      USERS_URL: "http://users-service:5000"
+      BOOKS_URL: "http://books-service:5000"
+    depends_on:
+      - transactions-db
+      - books-service
+      - users-service
+    networks:
+      - main-network
+
+networks:
+  main-network:
+    driver: bridge
+
+volumes:
+  books_pgdata:
+  users_pgdata:
+  transactions_pgdata:
