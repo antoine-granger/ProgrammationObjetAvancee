@@ -2,12 +2,16 @@ class SalesReport:
     def __init__(self, book_manager):
         """
         Initialize a SalesReport object with a BookManager instance.
+        :param book_manager:
         """
         self.book_manager = book_manager
 
     def generate_report(self):
         """
-        Generate a report based on the sales transactions.
+        Generates a sales report based on the transactions stored in the book manager.
+        
+        Returns:
+            str: The sales report containing information about each transaction.
         """
         transactions = self.book_manager.get_transactions()
         report = "Sales Report:\n"
