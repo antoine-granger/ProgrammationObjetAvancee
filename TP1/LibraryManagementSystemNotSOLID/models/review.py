@@ -1,47 +1,41 @@
 class Review:
-    def __init__(self, book, review_text, rating):
+    def __init__(self, author, review_text, rating, title):
         """
         Initialize a Review instance.
-        :param book:
-        :param review_text:
-        :param rating:
+
+        :param author: str: Author of the review.
+        :param review_text: str: Text of the review.
+        :param rating: float: Rating given by the reviewer.
+        :param title: str: Title of the review.
         """
-        self.book = book
+        self.title = title
+        self.author = author
         self.review_text = review_text
         self.rating = rating
 
     def __str__(self) -> str:
         """
         Return a string representation of the object.
-        
+    
         :return: A string representation of the object.
         :rtype: str
         """
-        return f"Review: {self.review_text} ({self.rating}/5)"
+        return f"Review for '{self.title}' by {self.author}: {self.review_text} ({self.rating}/5)"
 
     def get_rating(self):
         """
         Get the rating of the object.
-        
-        Returns:
-            The rating of the object.
+
+        :return: The rating of the object.
+        :rtype: int
         """
         return self.rating
-
-    def get_book(self):
-        """
-        Get the value of the book attribute.
-        
-        Returns:
-            The value of the book attribute.
-        """
-        return self.book
 
     def get_review_text(self):
         """
         Return the review text.
-        
-        Returns:
-            str: The review text.
+
+        :return: The review text.
+        :rtype: str
         """
         return self.review_text
