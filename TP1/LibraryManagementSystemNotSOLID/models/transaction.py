@@ -1,28 +1,45 @@
+from datetime import datetime
+
+from models.person import Person
+from models.book import Book
+
+
 class Transaction:
-    def __init__(self, book, buyer, date, status):
+    def __init__(self, book: Book, buyer: Person, date: datetime, transaction_type):
         """
-        Initialize a Transaction object.
-        :param book:
-        :param buyer:
-        :param date:
-        :param status:
+        Initializes a new instance of the class.
+        
+        :param book: Book: The book object associated with the transaction.
+        :param buyer: Person: The person object representing the buyer.
+        :param date: datetime: The date of the transaction.
+        :param transaction_type: str: The type of transaction ("purchase" or "borrow").
         """
         self.book = book
         self.buyer = buyer
         self.date = date
-        self.status = status
+        self.transaction_type = transaction_type  # "purchase" or "borrow"
 
-    def process(self):
+    def __str__(self):
         """
-        Updates the status of the transaction to "processed" and prints a message with the details of the transaction.
-        
-        Note: This implementation violates the Single Responsibility Principle (SRP).
-        
-        SRP Violation: The update_status method is responsible for updating the status of the transaction, but it is
-        doing two things: updating the status and printing a message
+        Returns a string representation of the object.
 
-        Returns:
-            None
+        :return: A string representation of the object.
+        :rtype: str
         """
-        self.status = "processed"
-        print(f"Transaction processed: {self.book} by {self.buyer} ({self.date})")
+        return f"Transaction: {self.book} by :{self.buyer.__str__()} \nDate:({self.date})"
+
+    def update_status(self, transaction_type: str):
+        """
+        Updates the status of the object.
+
+        :param transaction_type: str: The new status.
+
+        :return: None
+        """
+        # Vérification de la validité du statut
+        valid_statuses = ["purchase", "borrow", "returned"]
+        if transaction_type not in valid_statuses:
+            print("Invalid status")
+            return
+    
+        self.transaction_type = transaction_type
