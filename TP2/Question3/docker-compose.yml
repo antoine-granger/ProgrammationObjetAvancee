@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  clients-service:
+    build: clients_service/
+    ports:
+      - "5001:5000"
+
+  books-service:
+    build: books_service/
+    ports:
+      - "5002:5000"
+
+  reviews-service:
+    build: reviews_service/
+    ports:
+      - "5003:5000"
+
+  transactions-service:
+    build: transactions_service/
+    ports:
+      - "5004:5000"
