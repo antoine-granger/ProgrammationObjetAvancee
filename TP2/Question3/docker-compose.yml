@@ -9,8 +9,30 @@ services:
     depends_on:
       - books-service
       - users-service
-    # - reviews-service
-    # - transactions-service
+    networks:
+      - main-network
+
+  users-db:
+    image: postgres:12
+    ports:
+      - "5433:5432"
+    volumes:
+      - users_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbUser
+    networks:
+      - main-network
+
+  users-service:
+    build: users_service/
+    ports:
+      - "5003:5000"
+    environment:
+      DATABASE_URL: postgresql://username:password@users-db:5432/dbUser
+    depends_on:
+      - users-db
     networks:
       - main-network
 
@@ -19,7 +41,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - books_pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
@@ -38,42 +60,6 @@ services:
     networks:
       - main-network
 
-  users-db:
-    image: postgres:12
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: username
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dbUsers
-    networks:
-      - main-network
-
-  users-service:
-    build: users_service/
-    ports:
-      - "5001:5000"
-    environment:
-      DATABASE_URL: postgresql://username:password@books-db:5432/dbUsers
-    depends_on:
-      - users-db
-    networks:
-      - main-network
-
-  # reviews-service:
-  #   build: reviews_service/
-  #   ports:
-  #     - "5003:5000"
-  #   networks:
-  #     - main-network
-
-  # transactions-service:
-  #   build: transactions_service/
-  #   ports:
-  #     - "5004:5000"
-  #   networks:
-  #     - main-network
-
   web-interface:
     build: web_interface/
     ports:
@@ -88,4 +74,5 @@ networks:
     driver: bridge
 
 volumes:
-  pgdata:
+  books_pgdata:
+  users_pgdata:
