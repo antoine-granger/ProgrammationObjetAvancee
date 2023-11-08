@@ -1,6 +1,5 @@
 version: '3'
 
-
 services:
   api-gateway:
     build: api_gateway/
@@ -66,6 +65,32 @@ services:
       - "8000:8000"
     depends_on:
       - api-gateway
+    networks:
+      - main-network
+
+  transactions-db:
+    image: postgres:12
+    ports:
+      - "5434:5432"
+    volumes:
+      - books_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbTransaction
+    networks:
+      - main-network
+
+  transactions-service:
+    build: transactions_service/
+    ports:
+      - "5001:5000"
+    environment:
+      DATABASE_URL: postgresql://username:password@transactions-db:5432/dbTransaction
+    depends_on:
+      - transactions-db
+      - books-service
+      - users-service
     networks:
       - main-network
 
