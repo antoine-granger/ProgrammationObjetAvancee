@@ -1,4 +1,7 @@
 from functools import wraps
+
+import requests
+
 from users_service.models import User
 from flask import session, flash, redirect, url_for
 

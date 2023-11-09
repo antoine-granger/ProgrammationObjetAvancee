@@ -10,6 +10,7 @@ services:
     depends_on:
       - books-service
       - users-service
+      - transactions-service
     networks:
       - main-network
 
@@ -75,7 +76,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - books_pgdata:/var/lib/postgresql/data
+      - transactions_pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
@@ -86,9 +87,11 @@ services:
   transactions-service:
     build: transactions_service/
     ports:
-      - "5001:5000"
+      - "5004:5000"
     environment:
       DATABASE_URL: postgresql://username:password@transactions-db:5432/dbTransaction
+      USERS_URL: "http://users-service:5000"
+      BOOKS_URL: "http://books-service:5000"
     depends_on:
       - transactions-db
       - books-service
@@ -103,3 +106,4 @@ networks:
 volumes:
   books_pgdata:
   users_pgdata:
+  transactions_pgdata:

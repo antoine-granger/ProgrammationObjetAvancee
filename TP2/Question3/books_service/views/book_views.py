@@ -114,3 +114,10 @@ def search_books():
     if not books:
         return jsonify(404, {"message": "No books found"})
     return jsonify(books_data), 200
+
+@app.route("/books/<string:book_title>", methods=["GET"])
+def get_book(book_title):
+    book = Book.query.filter_by(title=book_title).first()
+    if book is None:
+        return jsonify({"message": "Book not found"}), 404
+    return jsonify(book.serialize()), 200

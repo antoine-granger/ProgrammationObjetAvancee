@@ -10,7 +10,7 @@ def get_min_available_id():
     user_ids = [user_id[0] for user_id in user_ids]
     if not user_ids:
         return 1
-    # Trouver le plus petit ID non utilisé
+    # Trouver le plus pe ID non utilisé
     # Pour cela, on crée une série d'IDs à partir de 1 jusqu'au maximum ID utilisé + 1
     all_ids = set(range(1, max(user_ids) + 1))
     available_ids = all_ids - set(user_ids)
@@ -99,3 +99,10 @@ def search_users():
     if not users:
         return jsonify(404, {"message": "No users found"})
     return jsonify(users_data), 200
+
+@app.route("/users/<string:username>", methods=["GET"])
+def get_user(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return jsonify({"message": "User not found"}), 404
+    return jsonify(user.serialize()), 200

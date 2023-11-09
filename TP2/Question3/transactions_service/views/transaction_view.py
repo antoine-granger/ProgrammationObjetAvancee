@@ -1,7 +1,8 @@
-from transactions_service import app, db
+from transactions_service import app, db, user_serv, book_serv
 from transactions_service.models.transaction import Transaction
 from transactions_service.models.available_ids import AvailableIDs
 from flask import jsonify, request
+import requests
 
 
 def get_min_available_id():
@@ -23,27 +24,33 @@ def remove_available_id(used_id):
     db.session.commit()
 
 
-# Add new transaction in the database
+# Adds new transaction in the database
 @app.route("/transactions", methods=["POST"])
 def post_transaction():
     min_id = get_min_available_id()
-    user = request.json["user"]
-    book = request.json["book"]
+    user_name = request.json["user"]
+    user_id = requests.get(user_serv + "/users/" + user_name).json()["id"]
+    if user_id is None:
+        return jsonify({"message": "User not found"}), 404
+    book_name = request.json["book"]
+    book_id = requests.get(book_serv + "/books/" +book_name).json()["id"]
+    if book_id is None:
+        return jsonify({"message": "Book not found"}), 404
     category = request.json["category"]
     value = request.json["value"]
-    transaction = Transaction(id=min_id, user=request.json["user"], book=request.json["book"],category=category, value=value)
+    transaction = Transaction(id=int(min_id), user=int(user_id), book=int(book_id),category=category, value=int(value))
     db.session.add(transaction)
     db.session.commit()
-    return
+    return jsonify({"message": f"Transaction added successfully"}), 201
 
 
 # Remove transaction from the database
 @app.route("/transactions/<int:transaction_id>", methods=["DELETE"])
 def delete_transaction(transaction_id):
-    transaction_id = Transaction.query.get(transaction_id)
-    if transaction_id is None:
+    transaction = Transaction.query.get(transaction_id)
+    if transaction is None:
         return jsonify({"message": "Transaction not found"}), 404
-    db.session.delete(transaction_id)
+    db.session.delete(transaction)
     db.session.commit()
     remove_available_id(transaction_id)
     return jsonify({"message": "Transaction deleted successfully"}), 200
@@ -55,8 +62,16 @@ def update_transaction(transaction_id):
     transaction = Transaction.query.get(transaction_id)
     if transaction is None:
         return jsonify({"message": "Transaction not found"}), 404
-    transaction.user = request.json["user"]
-    transaction.book = request.json["book"]
+    user_name = request.json["user"]
+    user_id = requests.get(user_serv + "/users/" + user_name).json()["id"]
+    if user_id is None:
+        return jsonify({"message": "User not found"}), 404
+    book_name = request.json["book"]
+    book_id = requests.get(book_serv + "/books/" + book_name).json()["id"]
+    if book_id is None:
+        return jsonify({"message": "Book not found"}), 404
+    transaction.user = user_id
+    transaction.book = book_id
     transaction.category = request.json["category"]
     transaction.value = request.json["value"]
     db.session.commit()
@@ -71,20 +86,30 @@ def get_transactions():
 
 
 # Get transaction for single user in the database
-@app.route("/transactions/user/<int:user_id>", methods=["GET"])
-def get_transactions_for_user(user_id):
+@app.route("/transactions/user/<string:user_name>", methods=["GET"])
+def get_transactions_for_user(user_name):
+    user_id = requests.get(user_serv + "/users/" + user_name).json()["id"]
+    if user_id is None:
+        return jsonify({"message": "User not found"}), 404
     transactions = Transaction.query.filter_by(user=user_id).all()
     if transactions is None:
         return jsonify({"message": "Transaction not found"}), 404
+    for transaction in transactions:
+        transaction.user = user_name
     return jsonify([transaction.serialize() for transaction in transactions]), 200
 
 
 # Get transaction from single book in the database
-@app.route("/transactions/book/<int:book_id>", methods=["GET"])
-def get_transactions_for_book(book_id):
+@app.route("/transactions/book/<string:book_title>", methods=["GET"])
+def get_transactions_for_book(book_title):
+    book_id = requests.get(book_serv + "/books/" + book_title).json()["id"]
+    if book_id is None:
+        return jsonify({"message": "User not found"}), 404
     transactions = Transaction.query.filter_by(book=book_id).all()
     if transactions is None:
         return jsonify({"message": "Transaction not found"}), 404
+    for transaction in transactions:
+        transaction.book = book_title
     return jsonify([transaction.serialize() for transaction in transactions]), 200
 
 
