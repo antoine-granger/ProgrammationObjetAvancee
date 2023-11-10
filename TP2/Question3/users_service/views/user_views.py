@@ -100,6 +100,7 @@ def search_users():
         return jsonify(404, {"message": "No users found"})
     return jsonify(users_data), 200
 
+
 @app.route("/users/<string:username>", methods=["GET"])
 def get_user(username):
     user = User.query.filter_by(username=username).first()

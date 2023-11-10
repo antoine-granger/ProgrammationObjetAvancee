@@ -24,21 +24,37 @@ def remove_available_id(used_id):
     db.session.commit()
 
 
+def get_user_id(name):
+    response = requests.get(user_serv + "/users/search", params={"username": name})
+    if response.status_code == 200:
+        return response.json()[0]["id"]
+    else:
+        return None
+
+
+def get_book_id(name):
+    response = requests.get(book_serv + "/books/search", params={"username": name})
+    if response.status_code == 200:
+        return response.json()[0]["id"]
+    else:
+        return None
+
+
 # Adds new transaction in the database
 @app.route("/transactions", methods=["POST"])
 def post_transaction():
     min_id = get_min_available_id()
     user_name = request.json["user"]
-    user_id = requests.get(user_serv + "/users/" + user_name).json()["id"]
+    user_id = get_user_id(user_name)
     if user_id is None:
         return jsonify({"message": "User not found"}), 404
     book_name = request.json["book"]
-    book_id = requests.get(book_serv + "/books/" +book_name).json()["id"]
+    book_id = get_book_id(book_name)
     if book_id is None:
         return jsonify({"message": "Book not found"}), 404
     category = request.json["category"]
     value = request.json["value"]
-    transaction = Transaction(id=int(min_id), user=int(user_id), book=int(book_id),category=category, value=int(value))
+    transaction = Transaction(id=int(min_id), user=int(user_id), book=int(book_id), category=category, value=int(value))
     db.session.add(transaction)
     db.session.commit()
     return jsonify({"message": f"Transaction added successfully"}), 201
@@ -88,7 +104,7 @@ def get_transactions():
 # Get transaction for single user in the database
 @app.route("/transactions/user/<string:user_name>", methods=["GET"])
 def get_transactions_for_user(user_name):
-    user_id = requests.get(user_serv + "/users/" + user_name).json()["id"]
+    user_id = get_user_id(user_name)
     if user_id is None:
         return jsonify({"message": "User not found"}), 404
     transactions = Transaction.query.filter_by(user=user_id).all()
@@ -102,7 +118,7 @@ def get_transactions_for_user(user_name):
 # Get transaction from single book in the database
 @app.route("/transactions/book/<string:book_title>", methods=["GET"])
 def get_transactions_for_book(book_title):
-    book_id = requests.get(book_serv + "/books/" + book_title).json()["id"]
+    book_id = get_book_id(book_title)
     if book_id is None:
         return jsonify({"message": "User not found"}), 404
     transactions = Transaction.query.filter_by(book=book_id).all()
