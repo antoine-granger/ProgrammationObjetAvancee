@@ -10,4 +10,4 @@ De plus chacun des microservices possède sa propre base de données stockée en
 Le déploiement de cette architecture nécessite l'installation de docker ainsi que d'un moyen d'envoyer des requêtes HTTP dans le bon format. (Les formats attendus pour les objets se trouvent dans les dossiers *models* )
 Pour faciliter le test des fonctionnalités, des scripts *python* sont présents pour déployer, arrêter et nettoyer les containers, respectivement **deploy.py**, **stop.py** et **clear.py** . 
 
-De plus, un fichier contenant diverses requêtes HTTP est fourni et peut être utilisé sur l'applicaiton PostMan. 
+De plus, un fichier contenant diverses requêtes HTTP est fourni et peut être utilisé sur l'application PostMan pour envoyer et visualiser le comportement de l'application. 
