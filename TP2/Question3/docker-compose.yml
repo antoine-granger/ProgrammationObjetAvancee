@@ -11,6 +11,7 @@ services:
     depends_on:
       - books-service
       - users-service
+      - transactions-service
     networks:
       - main-network
 
@@ -71,6 +72,34 @@ services:
     networks:
       - main-network
 
+  transactions-db:
+    image: postgres:12
+    ports:
+      - "5434:5432"
+    volumes:
+      - transactions_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbTransaction
+    networks:
+      - main-network
+
+  transactions-service:
+    build: transactions_service/
+    ports:
+      - "5004:5000"
+    environment:
+      DATABASE_URL: postgresql://username:password@transactions-db:5432/dbTransaction
+      USERS_URL: "http://users-service:5000"
+      BOOKS_URL: "http://books-service:5000"
+    depends_on:
+      - transactions-db
+      - books-service
+      - users-service
+    networks:
+      - main-network
+
 networks:
   main-network:
     driver: bridge
@@ -78,3 +107,4 @@ networks:
 volumes:
   books_pgdata:
   users_pgdata:
+  transactions_pgdata:

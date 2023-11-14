@@ -18,10 +18,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 def token_required(f):
     """
     Decorator that checks if a valid token is present in the request headers.
-    
+
     :param f: The function to be decorated.
     :type f: function
-    
+
     :return: The decorated function.
     :rtype: function
     """
@@ -100,7 +100,7 @@ def login():
 def get_books():
     """
     A function that retrieves a list of books from the book service API.
-    
+
     :return:
         - If the response from the API is successful (status code 200), returns the list of books in JSON format.
         - If the response from the API is not successful, returns a JSON response and the corresponding status code.
@@ -233,10 +233,10 @@ def gateway_post_user():
 def gateway_update_user(user_id):
     """
     Updates a user's information in the gateway.
-    
+
     :param user_id: The ID of the user to be updated.
     :type user_id: int
-    
+
     :return: A tuple containing the JSON response and the status code of the update request.
     :rtype: tuple
     """
@@ -248,9 +248,9 @@ def gateway_update_user(user_id):
 def gateway_search_users():
     """
     Gateway function to search for users.
-    
+
     This function is responsible for handling the HTTP GET request to search for users. It takes no parameters.
-    
+
     :return: A JSON response containing the search results and the HTTP status code.
     :rtype: dict
     """

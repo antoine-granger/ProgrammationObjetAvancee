@@ -73,7 +73,7 @@ def login():
 def get_users():
     """
     Retrieve all users from the database.
- 
+
     :return: A JSON response containing a list of serialized user objects.
     :rtype: tuple
     """
@@ -133,10 +133,10 @@ def post_user():
 def update_user(user_id):
     """
     Update a user with the given user_id.
-    
+
     :param user_id: The ID of the user to update.
     :type user_id: int
-    
+
     :return: A JSON response containing the updated user's information and a status code.
     :rtype: tuple
     """
