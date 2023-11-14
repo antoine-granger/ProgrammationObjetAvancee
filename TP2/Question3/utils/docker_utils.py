@@ -36,11 +36,6 @@ def deploy_docker_compose_down():
         print(f"Erreur lors de l'arret de Docker-compose : {e}")
 
 
-def remove_docker_image(image_name):
-    command = f"docker image rm {image_name}"
-    subprocess.run(command, shell=True, check=True)
-
-
 def clear_images(_list):
     for image in _list:
         # print image name
@@ -57,4 +52,3 @@ def clear_volumes(_list):
         if volume_name.__contains__("question3"):
             command = f"docker volume rm {volume_name}"
             subprocess.run(command, shell=True, check=True)
-
