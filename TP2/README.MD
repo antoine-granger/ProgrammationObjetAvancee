@@ -47,3 +47,44 @@ i. Implantation d'exemples en Python pour démontrer ces concepts. (70%)
 ii. Un document word expliquant comment vous avez implémenté ces concepts et présentant également les avantages de Python en analyse de données à travers des exemples. (20%)
 iii. Ce fichier README contenant vos noms. (10%)
 iv. Ensemble du travail fourni dans un fichier .zip.
+
+## Remarques :
+
+Pour tester le code, vous pouvez Utiliser la commande 
+```
+python deploy.py
+```
+
+Puis installer postman et importer le fichier : ***Library_management_system.postman_collection.json***
+
+Vous devrez ensuite ajouter un utilisateur dans la base de données du système pour pouvoir vous authentifier.
+Dans postman, aller dans /users/post user et cliquez sur **Post User**
+Dans body, entrer les informations suivantes :
+```json
+{
+    "username": "toto",
+    "password": "password",
+    "role": "admin"
+}
+```
+et cliquer sur **Send**
+
+Ensuite, vous pouvez vous authentifier avec les nouvelles identifiants
+Dans postman, aller dans /api_gateway/login et et renseigner les identifiants dans le body.
+```json
+{
+    "username": "toto",
+    "password": "password"
+}
+```
+
+Un token est renvoyé par le serveur
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw"
+}
+```
+
+Dans postman, aller le champs **Authorization** des requêtes dans /api_gateway avec la catégorie **Bearer token**.
+Le token ci dessus devrais déjà être renseigner par defaut.
+Maintenant vous pouvez tester le code à traves des exemples de requetes HTTP.

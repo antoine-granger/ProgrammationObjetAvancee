@@ -259,5 +259,111 @@ def gateway_search_users():
     return jsonify(response.json()), response.status_code
 
 
+@app.route('/transactions', methods=['POST'])
+@role_required('admin')
+def add_transaction():
+    """
+    Add a new transaction to the system.
+
+    :return: A JSON object containing the response data from the transaction service.
+    :rtype: dict
+    """
+    response = requests.post(f"{TRANSACTION_SERVICE_URL}/transactions", json=request.json)
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/transactions/<int:transaction_id>', methods=['DELETE'])
+@role_required('admin')
+def delete_transaction(transaction_id):
+    """
+    Deletes a transaction with the given transaction ID.
+
+    :param transaction_id: The ID of the transaction to be deleted.
+    :type transaction_id: int
+
+    :return: A JSON object containing the response data from the transaction service.
+    :rtype: dict
+    """
+    response = requests.delete(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}")
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/transactions/<int:transaction_id>', methods=['PUT'])
+@role_required('admin')
+def update_transaction(transaction_id):
+    """
+    Update a transaction by its ID.
+    
+    :param transaction_id: The ID of the transaction to be updated.
+    :type transaction_id: int
+    
+    :return: A JSON object containing the response data from the transaction service.
+    :rtype: dict
+    """
+    response = requests.put(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}", json=request.json)
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/transactions', methods=['GET'])
+@role_required('admin')
+def get_transactions():
+    """
+    Retrieve transactions from the transaction service.
+
+    :return: A JSON response containing the transactions and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions")
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/transactions/user/<string:user_name>', methods=['GET'])
+@role_required('admin')
+def get_user_transactions(user_name):
+    """
+    Retrieves the transactions for a specific user.
+
+    :param user_name: The name of the user.
+    :type user_name: str
+
+    :return: A JSON response containing the transactions and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/user/{user_name}")
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/transactions/book/<string:book_title>', methods=['GET'])
+@role_required('admin')
+def get_book_transactions(book_title):
+    """
+    Retrieves the transactions associated with a specific book.
+
+    :param book_title: The title of the book.
+    :type book_title: str
+
+    :return: A JSON response containing the transactions and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/book/{book_title}")
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/transactions/category/<string:category>', methods=['GET'])
+@role_required('admin')
+def get_category_transactions(category):
+    """
+    Retrieves transactions by category from the transaction service.
+
+    :param category: The category of transactions to retrieve.
+    :type category: str
+
+    :return: A JSON response containing the transactions and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/category/{category}")
+    return jsonify(response.json()), response.status_code
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

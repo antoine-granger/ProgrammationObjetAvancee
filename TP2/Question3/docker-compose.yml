@@ -1,6 +1,5 @@
 version: '3'
 
-
 services:
   api-gateway:
     build: api_gateway/
@@ -25,6 +24,11 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dbUser
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d dbUser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - main-network
 
@@ -49,6 +53,11 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dbBook
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d dbBook"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - main-network
 
@@ -82,6 +91,11 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dbTransaction
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d dbTransaction"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - main-network
 

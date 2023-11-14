@@ -1,0 +1,826 @@
+{
+  "info": {
+    "_postman_id": "cba9daf3-a813-4e0d-bafc-47822e084cc7",
+    "name": "Library management system Copy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31017448"
+  },
+  "item": [
+    {
+      "name": "books",
+      "item": [
+        {
+          "name": "books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5002/books",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5002",
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Harry Potter à l'école des sorciers\",\r\n    \"author\": \"J. K. Rowling\"\r\n}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:5002/books",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5002",
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:5002/books/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5002",
+              "path": [
+                "books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Le Seigneur des anneaux\",\r\n    \"author\": \"J. R. R. Tolkien\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5002/books/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5002",
+              "path": [
+                "books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books/search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5002/books/search?title=Dune&author=Franck Herbert",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5002",
+              "path": [
+                "books",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "Dune"
+                },
+                {
+                  "key": "author",
+                  "value": "Franck Herbert"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5003/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"toto\",\r\n    \"password\": \"password\",\r\n    \"role\": \"user\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5003/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:5003/users/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"tata\",\r\n    \"password\": \"password\",\r\n    \"role\": \"user\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5003/users/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users/search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5003/users/search?username=tata",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "tata"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"tata\",\r\n    \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5003/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "api gateway",
+      "item": [
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"toto\",\r\n    \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/books",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/books/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Le Seigneur des anneaux\",\r\n    \"author\": \"J. R. R. Tolkien\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/books/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "books",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "books/search",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/books/search?title=Dune&author=Franck Herbert",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "books",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "Dune"
+                },
+                {
+                  "key": "author",
+                  "value": "Franck Herbert"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"toto\",\r\n    \"password\": \"password\",\r\n    \"role\": \"admin\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:5000/users/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"tata\",\r\n    \"password\": \"password\",\r\n    \"role\": \"user\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5003/users/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5003",
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users/search",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvdG8iLCJyb2xlIjoiYWRtaW4ifQ.MIzcT7Y_P3BXVXS_ilskIHbuWS85M0SJVFvh8TqThVw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5002/books/search?title=Dune&author=Franck Herbert",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5002",
+              "path": [
+                "books",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "Dune"
+                },
+                {
+                  "key": "author",
+                  "value": "Franck Herbert"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "transactions",
+      "item": [
+        {
+          "name": "transaction",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"user\": \"toto\",\r\n    \"book\": \"Harry Potter à l'école des sorciers 1\",\r\n    \"category\": \"borrow\",\r\n    \"value\": -20\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5004/transactions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transaction",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:5004/transactions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transaction",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\":1,\r\n    \"user\": \"fake\",\r\n    \"book\": \"Harry Potter à l'école des sorciers 1\",\r\n    \"category\": \"borrow\",\r\n    \"value\": 0\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5004/transactions/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5004/transactions/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transaction by category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5004/transactions/category/borrow",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions",
+                "category",
+                "borrow"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transaction by user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5004/transactions/user/toto",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions",
+                "user",
+                "toto"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transaction by book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5004/transactions/user/toto",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5004",
+              "path": [
+                "transactions",
+                "user",
+                "toto"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
