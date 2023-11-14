@@ -2,6 +2,9 @@ from users_service import db
 
 
 class AvailableIDs(db.Model):
+    """
+    A model representing an available ID.
+    """
     __tablename__ = 'available_ids'
 
     id = db.Column(db.Integer, primary_key=True)

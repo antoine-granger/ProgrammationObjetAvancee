@@ -8,6 +8,4 @@ db = SQLAlchemy(app)
 user_serv = os.environ.get('USERS_URL')
 book_serv = os.environ.get('BOOKS_URL')
 # Importation des views
-# import sys
-# sys.path.append("C:/GitHub/ProgrammationObjetAvancee/TP2/Question3/users_service")
 from views import transaction_view

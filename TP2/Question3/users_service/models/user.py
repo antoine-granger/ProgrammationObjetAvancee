@@ -3,6 +3,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User(db.Model):
+    """
+    A model representing a user.
+    """
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +18,7 @@ class User(db.Model):
         Creates a hashed password and stores it in the password_hash field.
 
         :param password: The user's password.
+        :type password: str
         """
         self.password_hash = generate_password_hash(password)
 
@@ -23,6 +27,8 @@ class User(db.Model):
         Checks the hashed password against the given password.
 
         :param password: The password to check against the hashed password.
+        :type password: str
+
         :return: True if the password matches, False otherwise.
         :rtype: bool
         """

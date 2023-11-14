@@ -7,6 +7,4 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 # Importation des views
-# import sys
-# sys.path.append("C:/GitHub/ProgrammationObjetAvancee/TP2/Question3/books_service")
 from views import book_views

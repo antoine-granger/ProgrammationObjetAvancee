@@ -2,6 +2,9 @@ from books_service import db
 
 
 class Book(db.Model):
+    """
+    A model representing a book.
+    """
     __tablename__ = 'book'
 
     id = db.Column(db.Integer, primary_key=True)

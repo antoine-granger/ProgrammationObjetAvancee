@@ -5,6 +5,16 @@ from flask import jsonify, request
 
 
 def get_min_available_id():
+    """
+    Generates the smallest available ID that can be used for a new book.
+    This function queries the database to retrieve all existing book IDs,
+    creates a set of all possible IDs from 1 to the maximum existing ID + 1,
+    and returns the smallest ID that is not currently in use.
+
+    :return:
+        int: The smallest available ID for a new book. If no IDs are available,
+        the function returns the maximum existing ID + 1.
+    """
     book_ids = db.session.query(Book.id).all()
     book_ids = [book_id[0] for book_id in book_ids]
     if not book_ids:
@@ -19,6 +29,12 @@ def get_min_available_id():
 
 
 def remove_available_id(used_id):
+    """
+    Remove the used ID from the AvailableIDs table.
+
+    :param used_id: int: The ID to be removed from the AvailableIDs table.
+    :type used_id: int
+    """
     AvailableIDs.query.filter_by(id=used_id).delete()
     db.session.commit()
 
@@ -29,6 +45,7 @@ def get_books():
     Get a list of all books.
 
     :return: A JSON response containing the serialized data of all books.
+    :rtype: dict
     """
     books = Book.query.order_by(Book.id).all()
     return jsonify([book.serialize() for book in books]), 200
@@ -39,13 +56,12 @@ def delete_book(book_id):
     """
     Delete a book from the database based on its ID.
 
-    :param book_id: int: The ID of the book to be deleted.
+    :param book_id: The ID of the book to be deleted.
+    :type book_id: int
 
-    Returns:
-        dict: A JSON response indicating the success of the deletion.
-            - message (str): A message indicating the success of the deletion.
+    :return: A JSON response indicating the success of the deletion.
+    :rtype: dict
     """
-    # Recherche du livre par son ID
     book = Book.query.get(book_id)
     if book is None:
         return jsonify({"message": "Book not found"}), 404
@@ -61,9 +77,12 @@ def post_books():
     Create a new book and add it to the database.
 
     :return: A JSON response containing the serialized book object.
+    :rtype: dict
     """
     title = request.json["title"]
     author = request.json["author"]
+    if not title or not author:
+        return jsonify({"message": "Missing title or author"}), 400
     min_id = get_min_available_id()
     book = Book(id=min_id, title=title, author=author)
     db.session.add(book)
@@ -77,10 +96,10 @@ def update_book(book_id):
     Update a book in the database based on its ID.
 
     :param book_id: int: The ID of the book to be updated.
+    :type book_id: int
 
-    Returns:
-        dict: A JSON response indicating the success of the update.
-            - message (str): A message indicating the success of the update.
+    :return: A JSON response indicating the success of the update.
+    :rtype: dict
     """
     book = Book.query.get(book_id)
     if book is None:
@@ -99,6 +118,7 @@ def search_books():
     Search for books based on title or author.
 
     :return: A JSON response containing the serialized data of the found books.
+    :rtype: dict
     """
     search_title = request.args.get("title")
     search_author = request.args.get("author")
@@ -112,8 +132,9 @@ def search_books():
     books = query.all()
     books_data = [book.serialize() for book in books]
     if not books:
-        return jsonify(404, {"message": "No books found"})
+        return jsonify( {"message": "No books found"}), 404
     return jsonify(books_data), 200
+
 
 @app.route("/books/<string:book_title>", methods=["GET"])
 def get_book(book_title):

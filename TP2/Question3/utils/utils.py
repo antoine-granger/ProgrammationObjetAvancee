@@ -1,12 +1,17 @@
 from functools import wraps
-
-import requests
-
 from users_service.models import User
 from flask import session, flash, redirect, url_for
 
 
 def requires_roles(*roles):
+    """
+    Decorator that checks if the user has the required roles to access a route.
+
+    :param roles: The roles that are allowed to access the route.
+    :type roles: list
+
+    :return: A decorator that checks if the user has the required roles to access a route.
+    """
     def wrapper(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
