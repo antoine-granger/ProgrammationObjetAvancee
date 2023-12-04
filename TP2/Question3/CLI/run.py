@@ -13,10 +13,9 @@ import jwt
 
 ### Global variables
 API_GATEWAY_URL = "http://localhost:5000"
-SECRET_KEY = os.environ.get('SECRET_KEY')
-
 username = ""
 password = ""
+SECRET_KEY = ""
 role = "admin"
 # Login interface
 
@@ -24,8 +23,12 @@ print("Welcome to the library\n" + "Write login to log or register to create an 
 command = input()
 
 
+def display_error(response):
+    print(response.json()["message"])
+
+
 def log_in():
-    global username, password
+    global username, password, SECRET_KEY
     print("Please enter your credentials\n")
     username = input("Username: ")
     password = input("Password: ")
@@ -39,11 +42,11 @@ def log_in():
     while not logged:
         if response.status_code == 200:
 
-            user_data = response.json()
-            print("Your token is: ", user_data)
+            SECRET_KEY = response.json()["token"]
+            print("Your token is: ", SECRET_KEY)
             logged = True
         else:
-            print("Login failed")
+            display_error(response)
             print("You have " + str(3 - log_try) + " attempts left")
             username = input("Username: ")
             password = input("Password: ")
@@ -66,7 +69,7 @@ def register():
     if response.status_code == 201:
         print("Account created")
     else:
-        print("Account creation failed")
+        display_error(response)
         exit(1)
 
 
@@ -79,17 +82,16 @@ else:
     exit(1)
 
 
-
-
 def book_commands(cmd):
     if cmd == "add":
         title = input("Enter title: ")
         author = input("Enter author: ")
-        response = requests.post(f"{API_GATEWAY_URL}/books", json={"title": title, "author": author})
+        response = requests.post(f"{API_GATEWAY_URL}/books", json={"title": title, "author": author},
+                                 headers={"Authorization": f"Bearer {SECRET_KEY}"})
         if response.status_code == 201:
             print("Book added")
         else:
-            print("Book addition failed")
+            display_error(response)
 
     elif cmd == "delete":
         title = input("Enter title: ")
@@ -97,13 +99,14 @@ def book_commands(cmd):
         response = requests.get(f"{API_GATEWAY_URL}/books/search?title={title}&author={author}")
         if response.status_code == 200:
             book_id = response.json()[0]["id"]
-            response = requests.delete(f"{API_GATEWAY_URL}/books/{book_id}")
+            response = requests.delete(f"{API_GATEWAY_URL}/books/{book_id}",
+                                       headers={"Authorization": f"Bearer {SECRET_KEY}"})
             if response.status_code == 200:
                 print("Book deleted")
             else:
-                print("Book deletion failed")
+                display_error(response)
         else:
-            print("Book not found")
+            display_error(response)
 
     elif cmd == "update":
         title = input("Enter title: ")
@@ -111,11 +114,12 @@ def book_commands(cmd):
         response = requests.get(f"{API_GATEWAY_URL}/books/search?title={title}&author={author}")
         if response.status_code == 200:
             book_id = response.json()[0]["id"]
-            response = requests.put(f"{API_GATEWAY_URL}/books/{book_id}", json={"title": "title", "author": "author"})
+            response = requests.put(f"{API_GATEWAY_URL}/books/{book_id}", json={"title": "title", "author": "author"},
+                                    headers={"Authorization": f"Bearer {SECRET_KEY}"})
             if response.status_code == 200:
                 print("Book updated")
             else:
-                print("Book update failed")
+                display_error(response)
         else:
             print("Book not found")
 
@@ -124,7 +128,7 @@ def book_commands(cmd):
         if response.status_code == 200:
             print(response.json())
         else:
-            print("Book display failed")
+            display_error(response)
 
     elif cmd == "search":
         title = input("Enter title: ")
@@ -133,7 +137,7 @@ def book_commands(cmd):
         if response.status_code == 200:
             print(response.json())
         else:
-            print("Book search failed")
+            display_error(response)
 
     else:
         print("Invalid command")
@@ -144,22 +148,26 @@ def user_commands(cmd):
         name = input("Enter username: ")
         pwd = input("Enter password: ")
         r = input("Enter role: ")
-        response = requests.post(f"{API_GATEWAY_URL}/users", json={"username": name, "password": pwd, "role": r})
+        response = requests.post(f"{API_GATEWAY_URL}/users", json={"username": name, "password": pwd, "role": r},
+                                 headers={"Authorization": f"Bearer {SECRET_KEY}"})
         if response.status_code == 201:
             print("User added")
         else:
-            print("User addition failed")
+
+            display_error(response)
     elif cmd == "delete":
         name = input("Enter username: ")
         pwd = input("Enter password: ")
         response = requests.get(f"{API_GATEWAY_URL}/users/search?username={name}&password={pwd}")
         if response.status_code == 200:
             user_id = response.json()[0]["id"]
-            response = requests.delete(f"{API_GATEWAY_URL}/users/{user_id}")
+            response = requests.delete(f"{API_GATEWAY_URL}/users/{user_id}",
+                                       headers={"Authorization": f"Bearer {SECRET_KEY}"})
             if response.status_code == 200:
                 print("User deleted")
             else:
-                print("User deletion failed")
+
+                display_error(response)
         else:
             print("User not found")
     elif cmd == "update":
@@ -168,19 +176,27 @@ def user_commands(cmd):
         response = requests.get(f"{API_GATEWAY_URL}/users/search?username={name}&password={pwd}")
         if response.status_code == 200:
             user_id = response.json()[0]["id"]
-            response = requests.put(f"{API_GATEWAY_URL}/users/{user_id}", json={"username": "username", "password": "password", "role": "role"})
+            response = requests.put(f"{API_GATEWAY_URL}/users/{user_id}",
+                                    json={"username": "username", "password": "password", "role": "role"},
+                                    headers={"Authorization": f"Bearer {SECRET_KEY}"})
             if response.status_code == 200:
-                print("User updated")
+
+                display_error(response)
             else:
-                print("User update failed")
+                display_error(response)
         else:
             print("User not found")
     elif cmd == "display":
         response = requests.get(f"{API_GATEWAY_URL}/users")
         if response.status_code == 200:
-            print(response.json())
+            for user in response.json():
+                print("ID:", user["id"])
+                print("Username:", user["username"])
+                print("Role:", user["role"])
+                print()
+
         else:
-            print("User display failed")
+            display_error(response)
     elif cmd == "search":
         name = input("Enter username: ")
         pwd = input("Enter password: ")
@@ -197,21 +213,25 @@ def transaction_commands(cmd):
     if cmd == "add":
         user = input("Enter user: ")
         book = input("Enter book: ")
-        response = requests.post(f"{API_GATEWAY_URL}/transactions", json={"user": user, "book": book})
+        response = requests.post(f"{API_GATEWAY_URL}/transactions", json={"user": user, "book": book},
+                                 headers={"Authorization": f"Bearer {SECRET_KEY}"})
         if response.status_code == 201:
             print("Transaction added")
         else:
             print("Transaction addition failed")
     elif cmd == "delete":
         transaction_id = input("Enter transaction id: ")
-        response = requests.delete(f"{API_GATEWAY_URL}/transactions/{transaction_id}")
+        response = requests.delete(f"{API_GATEWAY_URL}/transactions/{transaction_id}",
+                                   headers={"Authorization": f"Bearer {SECRET_KEY}"})
         if response.status_code == 200:
             print("Transaction deleted")
         else:
             print("Transaction deletion failed")
     elif cmd == "update":
         transaction_id = input("Enter transaction id: ")
-        response = requests.put(f"{API_GATEWAY_URL}/transactions/{transaction_id}", json={"user": "user", "book": "book"})
+        response = requests.put(f"{API_GATEWAY_URL}/transactions/{transaction_id}",
+                                json={"user": "user", "book": "book"},
+                                headers={"Authorization": f"Bearer {SECRET_KEY}"})
         if response.status_code == 200:
             print("Transaction updated")
         else:
