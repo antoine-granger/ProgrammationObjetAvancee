@@ -3,6 +3,14 @@ import requests
 import os
 import jwt
 
+# TODO
+"""  
+- Modifier les intéractions / menus 
+- Vérification de role 
+- Gestion de l'interface client
+- Inscription 
+"""
+
 ### Global variables
 API_GATEWAY_URL = "http://localhost:5000"
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -132,11 +140,98 @@ def book_commands(cmd):
 
 
 def user_commands(cmd):
-    pass
+    if cmd == "add":
+        name = input("Enter username: ")
+        pwd = input("Enter password: ")
+        r = input("Enter role: ")
+        response = requests.post(f"{API_GATEWAY_URL}/users", json={"username": name, "password": pwd, "role": r})
+        if response.status_code == 201:
+            print("User added")
+        else:
+            print("User addition failed")
+    elif cmd == "delete":
+        name = input("Enter username: ")
+        pwd = input("Enter password: ")
+        response = requests.get(f"{API_GATEWAY_URL}/users/search?username={name}&password={pwd}")
+        if response.status_code == 200:
+            user_id = response.json()[0]["id"]
+            response = requests.delete(f"{API_GATEWAY_URL}/users/{user_id}")
+            if response.status_code == 200:
+                print("User deleted")
+            else:
+                print("User deletion failed")
+        else:
+            print("User not found")
+    elif cmd == "update":
+        name = input("Enter username: ")
+        pwd = input("Enter password: ")
+        response = requests.get(f"{API_GATEWAY_URL}/users/search?username={name}&password={pwd}")
+        if response.status_code == 200:
+            user_id = response.json()[0]["id"]
+            response = requests.put(f"{API_GATEWAY_URL}/users/{user_id}", json={"username": "username", "password": "password", "role": "role"})
+            if response.status_code == 200:
+                print("User updated")
+            else:
+                print("User update failed")
+        else:
+            print("User not found")
+    elif cmd == "display":
+        response = requests.get(f"{API_GATEWAY_URL}/users")
+        if response.status_code == 200:
+            print(response.json())
+        else:
+            print("User display failed")
+    elif cmd == "search":
+        name = input("Enter username: ")
+        pwd = input("Enter password: ")
+        response = requests.get(f"{API_GATEWAY_URL}/users/search?username={username}&password={password}")
+        if response.status_code == 200:
+            print(response.json())
+        else:
+            print("User search failed")
+    else:
+        print("Invalid command")
 
 
-def transaction_commands(transaction_command):
-    pass
+def transaction_commands(cmd):
+    if cmd == "add":
+        user = input("Enter user: ")
+        book = input("Enter book: ")
+        response = requests.post(f"{API_GATEWAY_URL}/transactions", json={"user": user, "book": book})
+        if response.status_code == 201:
+            print("Transaction added")
+        else:
+            print("Transaction addition failed")
+    elif cmd == "delete":
+        transaction_id = input("Enter transaction id: ")
+        response = requests.delete(f"{API_GATEWAY_URL}/transactions/{transaction_id}")
+        if response.status_code == 200:
+            print("Transaction deleted")
+        else:
+            print("Transaction deletion failed")
+    elif cmd == "update":
+        transaction_id = input("Enter transaction id: ")
+        response = requests.put(f"{API_GATEWAY_URL}/transactions/{transaction_id}", json={"user": "user", "book": "book"})
+        if response.status_code == 200:
+            print("Transaction updated")
+        else:
+            print("Transaction update failed")
+    elif cmd == "display":
+        response = requests.get(f"{API_GATEWAY_URL}/transactions")
+        if response.status_code == 200:
+            print(response.json())
+        else:
+            print("Transaction display failed")
+    elif cmd == "search":
+        user = input("Enter user: ")
+        book = input("Enter book: ")
+        response = requests.get(f"{API_GATEWAY_URL}/transactions/search?user={user}&book={book}")
+        if response.status_code == 200:
+            print(response.json())
+        else:
+            print("Transaction search failed")
+    else:
+        print("Invalid command")
 
 
 def cmd_prompt():
@@ -184,14 +279,14 @@ while True:
             book_commands(book_command)
 
     elif command == "user":
-        print("User service")
-        print("Available commands")
-        print("Write cancel to exit")
-        print("Write add to add users")
-        print("Write delete to delete users")
-        print("Write update to update users")
-        print("Write display to display users")
-        print("Write search to search users")
+        print("\tUser service")
+        print("\tAvailable commands")
+        print("\tWrite cancel to exit")
+        print("\tWrite add to add users")
+        print("\tWrite delete to delete users")
+        print("\tWrite update to update users")
+        print("\tWrite display to display users")
+        print("\tWrite search to search users")
         user_command = input()
         if user_command == "cancel":
             pass
@@ -200,14 +295,14 @@ while True:
         else:
             user_commands(user_command)
     elif command == "transaction":
-        print("Transaction service")
-        print("Available commands")
-        print("Write cancel to exit")
-        print("Write add to add transactions")
-        print("Write delete to delete transactions")
-        print("Write update to update transactions")
-        print("Write display to display transactions")
-        print("Write search to search transactions")
+        print("\tTransaction service")
+        print("\tAvailable commands")
+        print("\tWrite cancel to exit")
+        print("\tWrite add to add transactions")
+        print("\tWrite delete to delete transactions")
+        print("\tWrite update to update transactions")
+        print("\tWrite display to display transactions")
+        print("\tWrite search to search transactions")
         transaction_command = input()
         if transaction_command == "cancel":
             pass
