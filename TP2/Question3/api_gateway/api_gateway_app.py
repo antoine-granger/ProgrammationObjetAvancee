@@ -364,6 +364,104 @@ def get_category_transactions(category):
     response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/category/{category}")
     return jsonify(response.json()), response.status_code
 
+@app.route('/transactions/<int:transaction_id>', methods=['GET'])
+def gateway_get_transaction(transaction_id):
+    """
+    Gateway function to retrieve a transaction.
+
+    :param transaction_id: The ID of the transaction to be retrieved.
+    :type transaction_id: int
+
+    :return: A JSON response containing the retrieved transaction and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}")
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions', methods=['GET'])
+def gateway_get_transactions():
+    """
+    Gateway function to retrieve all transactions.
+
+    :return: A JSON response containing the retrieved transactions and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions")
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/<int:transaction_id>', methods=['DELETE'])
+def gateway_delete_transaction(transaction_id):
+    """
+    Gateway function to delete a transaction.
+
+    :param transaction_id: The ID of the transaction to be deleted.
+    :type transaction_id: int
+
+    :return: A JSON response containing the deleted transaction and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.delete(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}")
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions', methods=['POST'])
+def gateway_post_transaction():
+    """
+    Gateway function to add a transaction.
+
+    :return: A JSON response containing the added transaction and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.post(f"{TRANSACTION_SERVICE_URL}/transactions", json=request.json)
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/<int:transaction_id>', methods=['PUT'])
+def gateway_update_transaction(transaction_id):
+    """
+    Gateway function to update a transaction.
+
+    :param transaction_id: The ID of the transaction to be updated.
+    :type transaction_id: int
+
+    :return: A JSON response containing the updated transaction and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.put(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}", json=request.json)
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/category/<string:category>', methods=['GET'])
+def gateway_get_transactions_by_category(category):
+    """
+    Gateway function to retrieve transactions by category.
+
+    :param category: The category of the transactions to be retrieved.
+    :type category: str
+
+    :return: A JSON response containing the retrieved transactions and the HTTP status code.
+    :rtype: dict
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/category/{category}")
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/user/<int:user_id>', methods=['GET'])
+def gateway_get_transactions_by_user(user_id):
+    """
+    Gateway function to retrieve transactions by user.
+    :param user_id:
+    :return:
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/user/{user_id}")
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/book/<int:book_id>', methods=['GET'])
+def gateway_get_transactions_by_book(book_id):
+    """
+    Gateway function to retrieve transactions by book.
+    :param book_id:
+    :return:
+    """
+    response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/book/{book_id}")
+    return jsonify(response.json()), response.status_code
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
