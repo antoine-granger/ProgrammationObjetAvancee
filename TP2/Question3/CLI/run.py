@@ -6,7 +6,6 @@ import jwt
 # TODO
 """  
 - Modifier les intéractions / menus [Click]
-- Vérification/Gestion des roles 
 - Gestion de l'interface user
 - Inscription 
 """
@@ -17,10 +16,11 @@ username = ""
 password = ""
 SECRET_KEY = ""
 role = ""
-# Login interface
+logged = False
+log_try = 3
 
-print("Welcome to the library\n" + "Write login to log or register to create an account")
-command = input()
+
+# Login interface
 
 
 def display_error(response):
@@ -28,37 +28,25 @@ def display_error(response):
 
 
 def log_in():
-    global username, password, SECRET_KEY, role
+    global username, password, SECRET_KEY, role, logged, log_try
     print("Please enter your credentials\n")
     username = input("Username: ")
     password = input("Password: ")
-    logged = False
-    log_try = 1
     try:
         response = requests.post(f"{API_GATEWAY_URL}/login", json={"username": username, "password": password})
     except requests.exceptions.ConnectionError:
         print("Connection refused")
         exit(1)
-    while not logged:
-        if response.status_code == 200:
-
-            SECRET_KEY = response.json()["token"]
-            logged = True
-        else:
-            display_error(response)
-            print("You have " + str(3 - log_try) + " attempts left")
-            username = input("Username: ")
-            password = input("Password: ")
-            response = requests.post(f"{API_GATEWAY_URL}/login", json={"username": username, "password": password})
-            log_try += 1
-            if log_try > 3:
-                print("Too many login attempts")
-                exit(1)
-
-    response = requests.get(f"{API_GATEWAY_URL}/users/search?username={username}&password={password}")
-    role = response.json()[0]["role"]
-    print(role)
-
+    if response.status_code == 200:
+        SECRET_KEY = response.json()["token"]
+        logged = True
+    else:
+        display_error(response)
+        if log_try <= 0:
+            print("Too many login attempts")
+            exit(1)
+        log_try -= 1
+        print("You have " + str(log_try) + " attempts left")
 
 
 def register():
@@ -75,15 +63,6 @@ def register():
     else:
         display_error(response)
         exit(1)
-
-
-if command == "login":
-    log_in()
-elif command == "register":
-    register()
-else:
-    print("Invalid command")
-    exit(1)
 
 
 def book_commands(cmd):
@@ -280,6 +259,22 @@ def cmd_prompt():
         exit(1)
 
 
+## ============  Main section ============ ##
+
+print("Welcome to the library\n")
+while not logged:
+    print("Write login to log or register to create an account \n")
+    command = input()
+    if command == "login":
+        log_in()
+    elif command == "register":
+        register()
+    else:
+        print("Invalid command")
+        exit(1)
+r = requests.get(f"{API_GATEWAY_URL}/users/search?username={username}&password={password}")
+role = r.json()[0]["role"]
+print(role)
 while True:
     cmd_prompt()
     command = input()
