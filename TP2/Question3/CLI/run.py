@@ -5,9 +5,9 @@ import jwt
 
 # TODO
 """  
-- Modifier les intéractions / menus 
-- Vérification de role 
-- Gestion de l'interface client
+- Modifier les intéractions / menus [Click]
+- Vérification/Gestion des roles 
+- Gestion de l'interface user
 - Inscription 
 """
 
@@ -16,7 +16,7 @@ API_GATEWAY_URL = "http://localhost:5000"
 username = ""
 password = ""
 SECRET_KEY = ""
-role = "admin"
+role = ""
 # Login interface
 
 print("Welcome to the library\n" + "Write login to log or register to create an account")
@@ -28,7 +28,7 @@ def display_error(response):
 
 
 def log_in():
-    global username, password, SECRET_KEY
+    global username, password, SECRET_KEY, role
     print("Please enter your credentials\n")
     username = input("Username: ")
     password = input("Password: ")
@@ -43,7 +43,6 @@ def log_in():
         if response.status_code == 200:
 
             SECRET_KEY = response.json()["token"]
-            print("Your token is: ", SECRET_KEY)
             logged = True
         else:
             display_error(response)
@@ -55,6 +54,11 @@ def log_in():
             if log_try > 3:
                 print("Too many login attempts")
                 exit(1)
+
+    response = requests.get(f"{API_GATEWAY_URL}/users/search?username={username}&password={password}")
+    role = response.json()[0]["role"]
+    print(role)
+
 
 
 def register():
@@ -263,7 +267,7 @@ def cmd_prompt():
         print("Write user to manage users")
         print("Write transaction to manage transactions")
         pass
-    elif role == "client":
+    elif role == "user":
         # Client section
         print("Here is the list of available commands\n")
         print("\t exit to exit")
