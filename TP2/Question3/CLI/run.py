@@ -4,10 +4,8 @@ import subprocess
 import requests
 import atexit
 
-# TODO
 """  
 - Modifier les intéractions / menus [Click]
-- Ajouter des paramètres au script
 """
 
 ### Global variables
@@ -45,6 +43,13 @@ def healthcheck():
         exit(1)
 
     print("Containers are running")
+
+
+def purge():
+    print("Purging...")
+    subprocess.run(["python", "../stop.py"])
+    subprocess.run(["python", "../clear.py"])
+    subprocess.run(["python", "../deploy.py"])
 
 
 def display_error(response):
@@ -308,6 +313,7 @@ def cmd_prompt():
         print("Write book to manage books")
         print("Write user to manage users")
         print("Write transaction to manage transactions")
+        print("Write purge to purge the database and redeploy \n")
         pass
     elif role == "user":
         print("User space")
@@ -349,6 +355,8 @@ while True:
     if role == "admin":
         if command == "exit":
             break
+        if command == "purge":
+            purge()
         elif command == "book":
             print("\tBook service")
             print("\tAvailable commands")
