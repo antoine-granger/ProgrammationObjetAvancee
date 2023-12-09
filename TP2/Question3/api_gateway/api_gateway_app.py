@@ -7,7 +7,6 @@ from functools import wraps
 
 app = Flask(__name__)
 
-
 BOOK_SERVICE_URL = "http://books-service:5000"
 USER_SERVICE_URL = "http://users-service:5000"
 REVIEW_SERVICE_URL = "http://reviews-service:5000"
@@ -25,6 +24,7 @@ def token_required(f):
     :return: The decorated function.
     :rtype: function
     """
+
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
@@ -42,6 +42,7 @@ def token_required(f):
         # Add the user object to the g object
         g.user = data
         return f(*args, **kwargs)
+
     return decorated
 
 
@@ -55,6 +56,7 @@ def role_required(role):
     :return: A decorator function that can be used to wrap other functions.
     :rtype: function
     """
+
     def decorator(f):
         @wraps(f)
         @token_required
@@ -62,9 +64,15 @@ def role_required(role):
             if g.user.get('role') != role:
                 return jsonify({'message': 'Unauthorized'}), 401
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator
 
+
+@app.route('/ping', methods=['POST'])
+def ping():
+    return jsonify({"message": "pong"}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -225,6 +233,18 @@ def gateway_post_user():
     :rtype: tuple
     """
     response = requests.post(f"{USER_SERVICE_URL}/users", json=request.json)
+    return jsonify(response.json()), response.status_code @ app.route('/users', methods=['POST'])
+
+
+@app.route('/users/public', methods=['POST'])
+def gateway_post_public_user():
+    """
+    Sends a POST request to the '/users' endpoint of the gateway API with the provided JSON payload.
+
+    :return: A tuple containing the JSON response and the HTTP status code of the POST request.
+    :rtype: tuple
+    """
+    response = requests.post(f"{USER_SERVICE_URL}/users", json=request.json)
     return jsonify(response.json()), response.status_code
 
 
@@ -270,6 +290,29 @@ def add_transaction():
     """
     response = requests.post(f"{TRANSACTION_SERVICE_URL}/transactions", json=request.json)
     return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/reserve', methods=['POST'])
+def reserve_transaction():
+    """
+    Add a new transaction to the system.
+
+    :return: A JSON object containing the response data from the transaction service.
+    :rtype: dict
+    """
+    response = requests.post(f"{TRANSACTION_SERVICE_URL}/transactions", json=request.json)
+    return jsonify(response.json()), response.status_code
+
+@app.route('/transactions/release', methods=['POST'])
+def release_transaction():
+    """
+    Add a new transaction to the system.
+
+    :return: A JSON object containing the response data from the transaction service.
+    :rtype: dict
+    """
+    response = requests.post(f"{TRANSACTION_SERVICE_URL}/transactions", json=request.json)
+    return jsonify(response.json()), response.status_code
+
 
 
 @app.route('/transactions/<int:transaction_id>', methods=['DELETE'])
@@ -364,6 +407,7 @@ def get_category_transactions(category):
     response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/category/{category}")
     return jsonify(response.json()), response.status_code
 
+
 @app.route('/transactions/<int:transaction_id>', methods=['GET'])
 def gateway_get_transaction(transaction_id):
     """
@@ -378,6 +422,7 @@ def gateway_get_transaction(transaction_id):
     response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}")
     return jsonify(response.json()), response.status_code
 
+
 @app.route('/transactions', methods=['GET'])
 def gateway_get_transactions():
     """
@@ -388,6 +433,7 @@ def gateway_get_transactions():
     """
     response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions")
     return jsonify(response.json()), response.status_code
+
 
 @app.route('/transactions/<int:transaction_id>', methods=['DELETE'])
 def gateway_delete_transaction(transaction_id):
@@ -403,6 +449,7 @@ def gateway_delete_transaction(transaction_id):
     response = requests.delete(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}")
     return jsonify(response.json()), response.status_code
 
+
 @app.route('/transactions', methods=['POST'])
 def gateway_post_transaction():
     """
@@ -413,6 +460,7 @@ def gateway_post_transaction():
     """
     response = requests.post(f"{TRANSACTION_SERVICE_URL}/transactions", json=request.json)
     return jsonify(response.json()), response.status_code
+
 
 @app.route('/transactions/<int:transaction_id>', methods=['PUT'])
 def gateway_update_transaction(transaction_id):
@@ -428,6 +476,7 @@ def gateway_update_transaction(transaction_id):
     response = requests.put(f"{TRANSACTION_SERVICE_URL}/transactions/{transaction_id}", json=request.json)
     return jsonify(response.json()), response.status_code
 
+
 @app.route('/transactions/category/<string:category>', methods=['GET'])
 def gateway_get_transactions_by_category(category):
     """
@@ -442,6 +491,7 @@ def gateway_get_transactions_by_category(category):
     response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/category/{category}")
     return jsonify(response.json()), response.status_code
 
+
 @app.route('/transactions/user/<int:user_id>', methods=['GET'])
 def gateway_get_transactions_by_user(user_id):
     """
@@ -451,6 +501,7 @@ def gateway_get_transactions_by_user(user_id):
     """
     response = requests.get(f"{TRANSACTION_SERVICE_URL}/transactions/user/{user_id}")
     return jsonify(response.json()), response.status_code
+
 
 @app.route('/transactions/book/<int:book_id>', methods=['GET'])
 def gateway_get_transactions_by_book(book_id):
