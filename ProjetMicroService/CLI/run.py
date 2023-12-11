@@ -1,453 +1,144 @@
-import requests
 import atexit
 
-from ProjetMicroService.deploy import main as deploy
-from ProjetMicroService.stop import main as stop
-from ProjetMicroService.clear import main as clear
-
-
-"""  
-- Modifier les intéractions / menus [Click]
-"""
+from CLI.CommandHandler.BookCommandHandler import BookCommandHandler
+from CLI.CommandHandler.TransactionCommandHandler import TransactionCommandHandler
+from CLI.CommandHandler.UserCommandHandler import UserCommandHandler
+from CLI.DockerInfrastructure.DockerInfrastructure import DockerInfrastructure
+from CLI.Terminal.Terminal import Terminal
+from CLI.User.User import User
 
 API_GATEWAY_URL = "http://localhost:5000"
 
-def exit_handler():
+
+def exit_handler(docker_infra):
     # Handler executed when the program exits
     print("Exiting program...")
-    stop()
+    docker_infra.stop()
 
 
-def healthcheck():
-    # Check if the containers are running
-    print("Checking if the containers are running...")
-    try:
-        requests.post(f"{API_GATEWAY_URL}/ping")
-    except Exception as e:
-        print(e)
-        print("Connection refused "
-              "\nContainers are not running"
-              "\nDeploying containers...")
-        deploy()
-    try:
-        requests.post(f"{API_GATEWAY_URL}/ping")
-    except Exception as e:
-        print(f"An error occurred while deploying containers \n error: {e}")
-        exit(1)
-    print("Containers are running")
-
-
-def purge():
-    print("Purging...")
-    stop()
-    clear()
-    deploy()
-
-
-def display_error(response):
-    print(response.json()["message"])
-
-
-def log_in():
-    global username, password, SECRET_KEY, role, logged, log_try
-    print("Please enter your credentials\n")
-    username = input("Username: ")
-    password = input("Password: ")
-    try:
-        response = requests.post(f"{API_GATEWAY_URL}/login", json={"username": username, "password": password})
-    except requests.exceptions.ConnectionError:
-        print("Connection refused")
-        exit(1)
-    if response.status_code == 200:
-        SECRET_KEY = response.json()["token"]
-        logged = True
-    else:
-        display_error(response)
-        if log_try <= 0:
-            print("Too many login attempts")
-            exit(1)
-        log_try -= 1
-        print("You have " + str(log_try) + " attempts left")
-
-
-def register():
-    global username, password, role
-    print("Please choose your credentials\n")
-    username = input("Username: ")
-    password = input("Password: ")
-    role = "user"
-
-    try:
-        response = requests.post(f"{API_GATEWAY_URL}/users/public",
-                                 json={"username": username, "password": password, "role": role})
-    except requests.exceptions.ConnectionError:
-        print("Connection refused")
-        exit(1)
-    if response.status_code == 201:
-        print("Account created")
-    else:
-        print(response.status_code)
-        display_error(response)
-
-
-def book_commands(cmd):
-    if role == "admin" or role == "user":
-        if cmd == "display":
-            response = requests.get(f"{API_GATEWAY_URL}/books")
-            if response.status_code == 200:
-                print("Number of books: " + str(len(response.json())))
-                for book in response.json():
-                    display_book(book)
-            else:
-                display_error(response)
-
-        elif cmd == "search":
-            title = input("Enter title: ")
-            author = input("Enter author: ")
-            response = requests.get(f"{API_GATEWAY_URL}/books/search?title={title}&author={author}")
-            if response.status_code == 200:
-                display_book(response.json()[0])
-            else:
-                display_error(response)
-        else:
-            print("Invalid command")
-    else:
-        if cmd == "add":
-            title = input("Enter title: ")
-            author = input("Enter author: ")
-            response = requests.post(f"{API_GATEWAY_URL}/books", json={"title": title, "author": author},
-                                     headers={"Authorization": f"Bearer {SECRET_KEY}"})
-            if response.status_code == 201:
-                print("Book added")
-            else:
-                display_error(response)
-
-        elif cmd == "delete":
-            title = input("Enter title: ")
-            author = input("Enter author: ")
-            response = requests.get(f"{API_GATEWAY_URL}/books/search?title={title}&author={author}")
-            if response.status_code == 200:
-                book_id = response.json()[0]["id"]
-                response = requests.delete(f"{API_GATEWAY_URL}/books/{book_id}",
-                                           headers={"Authorization": f"Bearer {SECRET_KEY}"})
-                if response.status_code == 200:
-                    print("Book deleted")
-                else:
-                    display_error(response)
-            else:
-                display_error(response)
-
-        elif cmd == "update":
-            title = input("Enter title: ")
-            author = input("Enter author: ")
-            response = requests.get(f"{API_GATEWAY_URL}/books/search?title={title}&author={author}")
-            if response.status_code == 200:
-                book_id = response.json()[0]["id"]
-                response = requests.put(f"{API_GATEWAY_URL}/books/{book_id}",
-                                        json={"title": "title", "author": "author"},
-                                        headers={"Authorization": f"Bearer {SECRET_KEY}"})
-                if response.status_code == 200:
-                    print("Book updated")
-                else:
-                    display_error(response)
-            else:
-                print("Book not found")
-        else:
-            print("Invalid command")
-
-
-def display_book(book):
-    print("Title: " + book["title"])
-    print("Author: " + book["author"])
-
-
-def user_commands(cmd):
-    if cmd == "add":
-        name = input("Enter username: ")
-        pwd = input("Enter password: ")
-        r = input("Enter role: ")
-        response = requests.post(f"{API_GATEWAY_URL}/users", json={"username": name, "password": pwd, "role": r},
-                                 headers={"Authorization": f"Bearer {SECRET_KEY}"})
-        if response.status_code == 201:
-            print("User added")
-        else:
-            display_error(response)
-    elif cmd == "delete":
-        name = input("Enter username: ")
-        pwd = input("Enter password: ")
-        response = requests.get(f"{API_GATEWAY_URL}/users/search?username={name}&password={pwd}")
-        if response.status_code == 200:
-            user_id = response.json()[0]["id"]
-            response = requests.delete(f"{API_GATEWAY_URL}/users/{user_id}",
-                                       headers={"Authorization": f"Bearer {SECRET_KEY}"})
-            if response.status_code == 200:
-                print("User deleted")
-            else:
-
-                display_error(response)
-        else:
-            print("User not found")
-    elif cmd == "update":
-        name = input("Enter username: ")
-        pwd = input("Enter password: ")
-        response = requests.get(f"{API_GATEWAY_URL}/users/search?username={name}&password={pwd}")
-        if response.status_code == 200:
-            user_id = response.json()[0]["id"]
-            response = requests.put(f"{API_GATEWAY_URL}/users/{user_id}",
-                                    json={"username": "username", "password": "password", "role": "role"},
-                                    headers={"Authorization": f"Bearer {SECRET_KEY}"})
-            if response.status_code == 200:
-                print("User updated")
-            else:
-                display_error(response)
-        else:
-            print("User not found")
-    elif cmd == "search":
-        name = input("Enter username: ")
-        response = requests.get(f"{API_GATEWAY_URL}/users/search?username={username}")
-        if response.status_code == 200:
-            display_user(response.json()[0])
-        else:
-            print("User search failed")
-    elif cmd == "display":
-        response = requests.get(f"{API_GATEWAY_URL}/users")
-        if response.status_code == 200:
-            for user in response.json():
-                display_user(user)
-
-        else:
-            display_error(response)
-    else:
-        print("Invalid command")
-
-
-def display_user(user):
-    print("ID:", user["id"])
-    print("Username:", user["username"])
-    print("Role:", user["role"])
-    print()
-
-
-def transaction_commands(cmd):
-    global username
-    if role == "user" or role == "admin":
-        if cmd == "reserve":
-            book_title = input("Enter book title: ")
-            # delete book
-            response = requests.post(
-                f"{API_GATEWAY_URL}/transactions/reserve?user={username}&book={book_title}&category=reserve&value=1")
-            if response.status_code == 200:
-                print("Book reserved")
-            else:
-                print("Book reservation failed")
-        elif cmd == "release":
-            book_title = input("Enter book title: ")
-            # delete book
-            response = requests.post(
-                f"{API_GATEWAY_URL}/transactions/release?user={username}&book={book_title}&category=release&value=1")
-            if response.status_code == 200:
-                print("Book released")
-            else:
-                print("Book release failed")
-        else:
-            print("Invalid command")
-    else:
-        if cmd == "add":
-            user = input("Enter user: ")
-            book = input("Enter book: ")
-            response = requests.post(f"{API_GATEWAY_URL}/transactions", json={"user": user, "book": book},
-                                     headers={"Authorization": f"Bearer {SECRET_KEY}"})
-            if response.status_code == 201:
-                print("Transaction added")
-            else:
-                print("Transaction addition failed")
-        elif cmd == "delete":
-            transaction_id = input("Enter transaction id: ")
-            response = requests.delete(f"{API_GATEWAY_URL}/transactions/{transaction_id}",
-                                       headers={"Authorization": f"Bearer {SECRET_KEY}"})
-            if response.status_code == 200:
-                print("Transaction deleted")
-            else:
-                print("Transaction deletion failed")
-        elif cmd == "update":
-            transaction_id = input("Enter transaction id: ")
-            response = requests.put(f"{API_GATEWAY_URL}/transactions/{transaction_id}",
-                                    json={"user": "user", "book": "book"},
-                                    headers={"Authorization": f"Bearer {SECRET_KEY}"})
-            if response.status_code == 200:
-                print("Transaction updated")
-            else:
-                print("Transaction update failed")
-        elif cmd == "display":
-            response = requests.get(f"{API_GATEWAY_URL}/transactions")
-            if response.status_code == 200:
-                print(response.json())
-            else:
-                print("Transaction display failed")
-        elif cmd == "search":
-            user = input("Enter user: ")
-            book = input("Enter book: ")
-            response = requests.get(f"{API_GATEWAY_URL}/transactions/search?user={user}&book={book}")
-            if response.status_code == 200:
-                print(response.json())
-            else:
-                print("Transaction search failed")
-        else:
-            print("Invalid command")
-
-
-def cmd_prompt():
-    if role == "admin":
+def cmd_prompt(session_user):
+    if session_user.role == "admin":
         # Admin section
-        print("Admin space")
-        print("Here is the list of available commands\n")
-        print("Write exit to exit")
-        print("Write book to manage books")
-        print("Write user to manage users")
-        print("Write transaction to manage transactions")
-        print("Write purge to purge the database and redeploy \n")
+        print(
+            "\nAdmin space"
+            "\nHere is the list of available commands\n"
+            "\n  - \033[32m'exit'\033[0m to exit"
+            "\n  - \033[32m'book'\033[0m to manage books"
+            "\n  - \033[32m'user'\033[0m to manage users"
+            "\n  - \033[32m'transaction'\033[0m to manage transactions"
+            "\n  - \033[32m'purge'\033[0m to purge the database and redeploy\n"
+        )
         pass
-    elif role == "user":
-        print("User space")
-        # Client section
-        print("Here is the list of available commands\n")
-        print("\t exit to exit")
-        print("\t books to list books")
-        print("\t search to search for a book")
-        print("\t reserve to reserve a book")
-        print("\t release to release a book")
-        pass
+    elif session_user.role == "user":
+        print(
+            "User space"
+            "\nHere is the list of available commands\n"
+            "\n  - \033[32m'exit'\033[0m to exit"
+            "\n  - \033[32m'book'\033[0m to list books"
+        )
     else:
-        print("Invalid role")
+        print("\033[31mInvalid role\033[0m")
         exit(1)
 
 
-def main():
-    username = ""
-    password = ""
-    SECRET_KEY = ""
-    role = ""
-    logged = False
-    log_try = 3
-    healthcheck()
-    atexit.register(exit_handler)
-    print("Welcome to the library\n")
-    while not logged:
-        print("Write login to log or register to create an account \n")
-        command = input()
-        if command == "login":
-            log_in()
-        elif command == "register":
-            register()
-        else:
-            print("Invalid command")
-            exit(1)
-    r = requests.get(f"{API_GATEWAY_URL}/users/search?username={username}&password={password}")
-    role = r.json()[0]["role"]
-    print(role)
+def get_login_info():
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    return {"username": username, "password": password}
+
+
+def login_or_register(terminal):
     while True:
-        print("=====================")
-        cmd_prompt()
-        command = input()
-        if role == "admin":
-            if command == "exit":
-                break
-            if command == "purge":
-                purge()
-            elif command == "book":
-                print(
-                    "\tBook service"
-                    "\tAvailable commands"
-                    "\tWrite cancel to exit"
-                    "\tWrite add to add books"
-                    "\tWrite delete to delete books"
-                    "\tWrite update to update books"
-                    "\tWrite display to display books"
-                    "\tWrite search to search books"
-                )
-                book_command = input()
-                if book_command == "cancel":
-                    pass
-                elif book_command == exit:
-                    break
-                else:
-                    book_commands(book_command)
-
-            elif command == "user":
-                print(
-                    "\tUser service"
-                    "\tAvailable commands"
-                    "\tWrite cancel to exit"
-                    "\tWrite add to add users"
-                    "\tWrite delete to delete users"
-                    "\tWrite update to update users"
-                    "\tWrite display to display users"
-                    "\tWrite search to search users"
-                )
-                user_command = input()
-                if user_command == "cancel":
-                    pass
-                elif user_command == exit:
-                    break
-                else:
-                    user_commands(user_command)
-            elif command == "transaction":
-                print(
-                    "\tTransaction service"
-                    "\tAvailable commands"
-                    "\tWrite cancel to exit"
-                    "\tWrite add to add transactions"
-                    "\tWrite delete to delete transactions"
-                    "\tWrite update to update transactions"
-                    "\tWrite display to display transactions"
-                    "\tWrite search to search transactions"
-                )
-                transaction_command = input()
-                if transaction_command == "cancel":
-                    pass
-                elif transaction_command == exit:
-                    break
-                else:
-                    transaction_commands(transaction_command)
+        command = input("Enter command \033[32m'login'\033[0m or \033[32m'register'\033[0m: ").lower()
+        if command == "login":
+            user_info = get_login_info()
+            response = terminal.login(user_info)
+            if isinstance(response, User):
+                return response
             else:
-                print("Invalid command")
-        elif role == "user":
-            if command == "exit":
-                break
-            elif command == "books":
-                book_commands("display")
-            elif command == "search":
-                book_commands("search")
-            elif command == "reserve":
-                transaction_commands("reserve")
-            elif command == "release":
-                transaction_commands("release")
+                print(f"\033[31mLogin failed : {response}\033[0m")
+        elif command == "register":
+            user_info = get_login_info()
+            response = terminal.register(user_info)
+            if isinstance(response, User):
+                print(f"Register user successful : \n{response.display_info()}")
+                return response
             else:
-                print("Invalid command")
-
+                print(f"\033[31mRegister user failed : {response}\033[0m")
         else:
-            print("Invalid role")
-            exit(1)
-
-        # Display list of actions
-
-        ## Admin section
-        # Book service
-        # Add, Remove, Update book
-
-        # User service
-        # Add, Remove, Update user
-
-        # Transaction service
-        # Add, Remove, Update transaction
-
-        ## Client section
-        # Book service
-        # Display list of books, Search books by title, Search books by author, Borrow book
-
-        # User service
-        # Update self account
+            print("\033[31mInvalid command, try again...\033[0m")
 
 
-if __name__ == '__main__':
-    main()
+def handle_admin_commands(command, session_user, docker_infra):
+    if command == "purge":
+        docker_infra.purge()
+    elif command in ["book", "user", "transaction"]:
+        handle_entity_commands(command, session_user)
+
+
+def handle_user_commands(command, session_user):
+    if command in ["book", "transaction"]:
+        handle_entity_commands(command, session_user)
+
+
+def handle_entity_commands(entity, session_user):
+    command_handler = {
+        "book": BookCommandHandler(session_user),
+        "user": UserCommandHandler(session_user),
+        "transaction": TransactionCommandHandler(session_user)
+    }.get(entity)
+
+    if command_handler:
+        command_handler.display_functions(session_user.role)
+        entity_command = input(f"Enter command for {entity}: \n")
+        command_handler.handle_command(entity_command)
+    else:
+        print("\033[31mInvalid command\033[0m")
+
+
+def main(docker_infra):
+    terminal = Terminal()
+    if terminal.healthcheck() is not True:
+        docker_infra.deploy()
+        if terminal.healthcheck() is not True:
+            print(f"\033[31mdocker infra failed to deploy...\033[0m")
+            docker_infra.stop()
+            return
+
+    print("Welcome to the library\n")
+    session_user = login_or_register(terminal)
+
+    if not session_user:
+        print("\033[31mLogin or registration failed. Exiting program.\033[0m")
+        return
+
+    while True:
+        print("\n=====================")
+        cmd_prompt(session_user)
+        command = input().lower()
+        if command == "exit":
+            break
+        if session_user.role == "admin":
+            handle_admin_commands(command, session_user, docker_infra)
+        elif session_user.role == "user":
+            handle_user_commands(command, session_user)
+        else:
+            print("\033[31mInvalid role\033[0m")
+            break
+
+
+if __name__ == "__main__":
+    docker_infra = DockerInfrastructure(
+        stack_name="library",
+        network_name="main-network",
+        volume_names=["books_pgdata", "users_pgdata", "transactions_pgdata"],
+    )
+    atexit.register(lambda: exit_handler(docker_infra))
+    try:
+        main(docker_infra)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt detected.")
+    except Exception as e:
+        print(f"Error : {e}")
+    finally:
+        print("Exiting program.")

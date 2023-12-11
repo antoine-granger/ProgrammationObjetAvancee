@@ -70,9 +70,10 @@ def role_required(role):
     return decorator
 
 
-@app.route('/ping', methods=['POST'])
+@app.route('/ping', methods=['GET'])
 def ping():
     return jsonify({"message": "pong"}), 200
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -99,7 +100,7 @@ def login():
             SECRET_KEY,
             algorithm='HS256'
         )
-        return jsonify({'token': token}), 200
+        return jsonify({'username': user_data['username'], 'role': user_data['role'], 'token': token}), 200
     else:
         return jsonify(response.json()), response.status_code
 
@@ -233,7 +234,7 @@ def gateway_post_user():
     :rtype: tuple
     """
     response = requests.post(f"{USER_SERVICE_URL}/users", json=request.json)
-    return jsonify(response.json()), response.status_code @ app.route('/users', methods=['POST'])
+    return jsonify(response.json()), response.status_code
 
 
 @app.route('/users/public', methods=['POST'])
