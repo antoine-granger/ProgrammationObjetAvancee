@@ -1,4 +1,4 @@
-from utils.docker_utils import run_command
+from CLI.DockerInfrastructure.docker_utils import run_command
 
 
 def init_swarm():
@@ -24,17 +24,3 @@ def scale_service(stack_name, service_name, replicas):
 def restart_service(stack_name, service_name):
     print(f"Restarting service '{service_name}'...")
     return run_command(f"docker service update --force {stack_name}_{service_name}")
-
-
-def main():
-    init_swarm()
-    deploy_output = deploy_stack("docker-compose.yml", "mystack")  # Deploy stack
-    print(deploy_output)
-    scale_output = scale_service("mystack", "api-gateway", 2)
-    print(scale_output)
-    restart_output = restart_service("mystack", "api-gateway")
-    print(restart_output)
-
-
-if __name__ == "__main__":
-    main()

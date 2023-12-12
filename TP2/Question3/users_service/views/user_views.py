@@ -115,7 +115,7 @@ def post_user():
     if not username or not password:
         return jsonify({"message": "Missing username or password"}), 400
     if role not in ["admin", "user"]:
-        return jsonify({"message": "Invalid role, must be 'admin' or 'user"}), 400
+        return jsonify({"message": "Invalid role, must be 'admin' or 'user'"}), 400
     # Check if the username already exists
     existing_user = User.query.filter_by(username=username).first()
     if existing_user:
