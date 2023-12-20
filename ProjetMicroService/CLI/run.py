@@ -133,7 +133,7 @@ if __name__ == "__main__":
         network_name="main-network",
         volume_names=["books_pgdata", "users_pgdata", "transactions_pgdata"],
     )
-    atexit.register(lambda: exit_handler(docker_infra))
+    #atexit.register(lambda: exit_handler(docker_infra))
     try:
         main(docker_infra)
     except KeyboardInterrupt:
